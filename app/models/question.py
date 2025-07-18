@@ -3,6 +3,7 @@ Modelo Question: representa una pregunta de la encuesta.
 """
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
+from app.models.option import Option
 from app.core.database import Base
 import enum
 
