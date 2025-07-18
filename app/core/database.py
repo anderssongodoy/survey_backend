@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # URL de conexión a la base de datos (ajustar según entorno)
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:1234@localhost:5432/survey_db")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

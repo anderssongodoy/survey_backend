@@ -20,5 +20,6 @@ class QuestionCreate(QuestionBase):
 class QuestionRead(QuestionBase):
     id: int
     survey_id: int
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }

@@ -15,5 +15,6 @@ class SurveyCreate(SurveyBase):
 class SurveyRead(SurveyBase):
     id: int
     created_at: datetime
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }
