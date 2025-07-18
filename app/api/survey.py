@@ -1,7 +1,7 @@
 """
 Survey router: endpoints related to surveys.
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from app.schemas.survey import SurveyCreate, SurveyRead
 from app.models.survey import Survey
@@ -18,6 +18,17 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+@router.get("/", response_model=list[SurveyRead], summary="List all surveys")
+def list_surveys(
+    skip: int = Query(0, ge=0, description="Number of items to skip"),
+    limit: int = Query(10, ge=1, le=100, description="Max items to return"),
+    db: Session = Depends(get_db)
+):
+    """List all surveys with pagination."""
+    surveys = db.query(Survey).offset(skip).limit(limit).all()
+    return surveys
 
 @router.post("/", response_model=SurveyRead, status_code=status.HTTP_201_CREATED, summary="Create a new survey")
 def create_survey(survey_in: SurveyCreate, db: Session = Depends(get_db)):

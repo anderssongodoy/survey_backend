@@ -1,66 +1,113 @@
 
+# Survey API Backend
 
-# Backend de API de Encuestas
+API RESTful para crear y gestionar encuestas, preguntas y opciones de respuesta. Construida con FastAPI y PostgreSQL, lista para desarrollo profesional, testing y despliegue.
 
-Una API RESTful modular, escalable y mantenible para crear y gestionar encuestas, construida con FastAPI y PostgreSQL.
+## Tabla de Contenidos
+- [Requisitos](#requisitos)
+- [Instalación y configuración](#instalación-y-configuración)
+- [Ejecución de la aplicación](#ejecución-de-la-aplicación)
+- [Pruebas](#pruebas)
+- [Uso con Postman](#uso-con-postman)
+- [Integración continua (CI)](#integración-continua-ci)
+- [Estructura del proyecto](#estructura-del-proyecto)
 
-## Objetivos
-- Arquitectura limpia y extensible (SOLID, Clean Code)
-- Estructura modular de carpetas para desarrollo rápido
-   No necesitas crear las tablas manualmente. Al iniciar la aplicación, las tablas se crean automáticamente a partir de los modelos SQLAlchemy.
-- Lista para producción y colaboración sencilla
+## Requisitos
+- Python 3.11+
+- PostgreSQL 13+
+- pip
 
-   ```bash
-   pip install -r requirements.txt
-   ```
-Se prioriza la claridad, la separación de responsabilidades y la facilidad para agregar nuevas funcionalidades o modificar las existentes.
-
-
-   - Ejecuta los tests con:
-     ```bash
-     pytest app/tests
-     ```
-   - El proyecto incluye un workflow de GitHub Actions que ejecuta los tests automáticamente en cada push o pull request.
-## ¿Cómo correr el proyecto?
-
-1. **Clona el repositorio:**
+## Instalación y configuración
+1. Clona el repositorio:
    ```bash
    git clone https://github.com/anderssongodoy/survey_backend.git
-   cd survey_backend/backend
+   cd survey_backend
    ```
-
-2. **Crea y activa un entorno virtual (opcional pero recomendado):**
+2. (Opcional) Crea y activa un entorno virtual:
    ```bash
    python -m venv .venv
    .venv\Scripts\activate  # En Windows
    # source .venv/bin/activate  # En Linux/Mac
    ```
-
-3. **Crea el archivo `.env` con la URL de la base de datos:**
+3. Crea el archivo `.env` en la raíz con:
    ```env
    DATABASE_URL=postgresql://postgres:1234@localhost:5432/survey_db
+   LOG_LEVEL=INFO
    ```
-
-4. **Instala las dependencias:**
+4. Instala las dependencias:
    ```bash
-   pip install fastapi sqlalchemy psycopg2-binary pydantic uvicorn python-dotenv
+   pip install -r requirements.txt
+   ```
+5. Asegúrate de tener PostgreSQL corriendo y la base de datos `survey_db` creada:
+   ```sql
+   -- En psql
+   CREATE DATABASE survey_db;
    ```
 
-5. **Configura la base de datos:**
-   - Crea una base de datos PostgreSQL local llamada `survey_db` (usuario: postgres, contraseña: 1234).
+## Ejecución de la aplicación
+Levanta el servidor de desarrollo con:
+```bash
+uvicorn app.main:app --reload
+```
+Las tablas se crean automáticamente al iniciar la app.
 
-6. **Crea las tablas:**
-   Puedes usar un script o migraciones (por ejemplo, con Alembic) para crear las tablas a partir de los modelos SQLAlchemy.
+## Pruebas
+Ejecuta todos los tests unitarios con:
+```bash
+pytest app/tests
+```
 
-7. **Ejecuta la aplicación:**
-   ```bash
-   uvicorn app.main:app --reload
-   ```
+## Uso con Postman
 
-8. **Pruebas y CI:**
-   - El proyecto incluye un workflow de GitHub Actions para lint y pruebas automáticas en cada push o pull request.
+### 1. Crear una encuesta
+**POST** `http://localhost:8000/surveys/`
+Body (JSON):
+```json
+{
+  "title": "Encuesta de satisfacción",
+  "description": "Por favor califica nuestro servicio"
+}
+```
 
-## ¿Por qué esta arquitectura es escalable y profesional?
+### 2. Agregar una pregunta a una encuesta
+**POST** `http://localhost:8000/surveys/{survey_id}/questions/`
+Body (JSON):
+```json
+{
+  "text": "¿Cómo calificarías el servicio?",
+  "question_type": "single_choice"
+}
+```
+
+### 3. Agregar una opción a una pregunta
+**POST** `http://localhost:8000/questions/{question_id}/options/`
+Body (JSON):
+```json
+{
+  "text": "Muy satisfecho"
+}
+```
+
+Las respuestas de error son claras si envías datos inválidos o IDs inexistentes.
+
+## Integración continua (CI)
+Cada push o pull request a `main` o `dev` ejecuta automáticamente un workflow de GitHub Actions que:
+- Levanta un contenedor de PostgreSQL para pruebas
+- Instala las dependencias del proyecto
+- Ejecuta todos los tests unitarios con pytest
+- Si algún test falla, el workflow marca el build como fallido
+
+## Estructura del proyecto
+```
+app/
+  api/           # Routers de FastAPI
+  core/          # Configuración y utilidades
+  models/        # Modelos SQLAlchemy
+  repositories/  # Acceso a datos
+  schemas/       # Esquemas Pydantic
+  services/      # Lógica de negocio
+  tests/         # Tests unitarios
+```
 
 - **Separación de responsabilidades:** Cada capa (modelos, esquemas, repositorios, servicios, API) tiene una única responsabilidad, facilitando el mantenimiento y la extensión.
 - **Modularidad:** La estructura permite agregar nuevas funcionalidades (por ejemplo, autenticación, analítica, nuevos tipos de preguntas) sin afectar el resto del sistema.
