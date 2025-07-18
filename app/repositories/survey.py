@@ -16,3 +16,6 @@ class SurveyRepository:
         return survey
 
     # Métodos adicionales (get, list, etc.) pueden agregarse aquí
+    def get_by_id(self, survey_id: int) -> Survey | None:
+        """Obtener una encuesta por ID."""
+        return self.db.query(Survey).filter(Survey.id == survey_id).first()

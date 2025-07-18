@@ -30,7 +30,7 @@ def add_question(
     logger = logging.getLogger("question")
     # Validar que la encuesta existe
     survey_repo = SurveyRepository(db)
-    survey = db.query(survey_repo.__class__.db).filter_by(id=survey_id).first()
+    survey = survey_repo.get_by_id(survey_id)
     if not survey:
         logger.warning(f"Survey not found: {survey_id}")
         raise HTTPException(status_code=404, detail="Survey not found")
