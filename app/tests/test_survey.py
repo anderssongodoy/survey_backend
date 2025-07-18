@@ -78,13 +78,18 @@ def test_get_survey_by_id():
     survey = create_sample_survey(db)
     question = create_sample_question(db, survey.id)
     option = create_sample_option(db, question.id)
+
+    survey_id = survey.id
+    question_id = question.id
+    option_id = option.id
     db.close()
-    response = client.get(f"/surveys/{survey.id}")
+
+    response = client.get(f"/surveys/{survey_id}")
     assert response.status_code == 200
     data = response.json()
-    assert data["id"] == survey.id
-    assert any(q["id"] == question.id for q in data["questions"])
-    assert any(o["id"] == option.id for o in data["questions"][0]["options"])
+    assert data["id"] == survey_id
+    assert any(q["id"] == question_id for q in data["questions"])
+    assert any(o["id"] == option_id for o in data["questions"][0]["options"])
 
 def test_get_survey_by_id_not_found():
     response = client.get("/surveys/9999")
