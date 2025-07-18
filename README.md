@@ -7,15 +7,20 @@ Una API RESTful modular, escalable y mantenible para crear y gestionar encuestas
 ## Objetivos
 - Arquitectura limpia y extensible (SOLID, Clean Code)
 - Estructura modular de carpetas para desarrollo rápido
-- Pruebas unitarias, logging y capas de abstracción
+   No necesitas crear las tablas manualmente. Al iniciar la aplicación, las tablas se crean automáticamente a partir de los modelos SQLAlchemy.
 - Lista para producción y colaboración sencilla
 
-## Enfoque y Decisiones Arquitectónicas
-El proyecto está diseñado para ser fácilmente escalable y mantenible, siguiendo principios SOLID y Clean Code. Se utiliza una estructura modular con capas bien definidas (modelos, esquemas, repositorios, servicios, API) para facilitar la extensión y el testing.
-
+   ```bash
+   pip install -r requirements.txt
+   ```
 Se prioriza la claridad, la separación de responsabilidades y la facilidad para agregar nuevas funcionalidades o modificar las existentes.
 
 
+   - Ejecuta los tests con:
+     ```bash
+     pytest app/tests
+     ```
+   - El proyecto incluye un workflow de GitHub Actions que ejecuta los tests automáticamente en cada push o pull request.
 ## ¿Cómo correr el proyecto?
 
 1. **Clona el repositorio:**
