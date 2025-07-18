@@ -30,6 +30,15 @@ def list_surveys(
     surveys = db.query(Survey).offset(skip).limit(limit).all()
     return surveys
 
+
+@router.get("/{survey_id}", response_model=SurveyRead, summary="Get survey details")
+def get_survey(survey_id: int, db: Session = Depends(get_db)):
+    """Get survey details, including questions and options."""
+    survey = db.query(Survey).filter(Survey.id == survey_id).first()
+    if not survey:
+        raise HTTPException(status_code=404, detail="Survey not found")
+    return survey
+
 @router.post("/", response_model=SurveyRead, status_code=status.HTTP_201_CREATED, summary="Create a new survey")
 def create_survey(survey_in: SurveyCreate, db: Session = Depends(get_db)):
     """Endpoint to create a new survey."""

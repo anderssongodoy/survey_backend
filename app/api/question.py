@@ -1,6 +1,8 @@
 """
 Question router: endpoints related to questions.
 """
+
+# Router para preguntas anidadas (crear pregunta en encuesta)
 from fastapi import APIRouter, Depends, HTTPException, status, Path
 from sqlalchemy.orm import Session
 from app.schemas.question import QuestionCreate, QuestionRead
@@ -11,7 +13,7 @@ from app.repositories.survey import SurveyRepository
 from app.core.database import SessionLocal
 import logging
 
-router = APIRouter(prefix="/surveys/{survey_id}/questions", tags=["questions"])
+router = APIRouter(tags=["questions"])
 
 def get_db():
     db = SessionLocal()
@@ -20,7 +22,18 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/", response_model=QuestionRead, status_code=status.HTTP_201_CREATED, summary="Add a question to a survey")
+
+# GET /questions/{question_id} (global, sin prefijo de survey)
+@router.get("/questions/{question_id}", response_model=QuestionRead, summary="Get question details")
+def get_question(question_id: int, db: Session = Depends(get_db)):
+    """Get question details, including options."""
+    question = db.query(Question).filter(Question.id == question_id).first()
+    if not question:
+        raise HTTPException(status_code=404, detail="Question not found")
+    return question
+
+# POST /surveys/{survey_id}/questions (anidado)
+@router.post("/surveys/{survey_id}/questions", response_model=QuestionRead, status_code=status.HTTP_201_CREATED, summary="Add a question to a survey")
 def add_question(
     survey_id: int = Path(..., description="ID of the survey"),
     question_in: QuestionCreate = None,
@@ -34,8 +47,10 @@ def add_question(
     if not survey:
         logger.warning(f"Survey not found: {survey_id}")
         raise HTTPException(status_code=404, detail="Survey not found")
-    # Validar tipo de pregunta
-    if question_in.question_type not in QuestionType.__members__.values():
+    # Validar tipo de pregunta (usando Enum de forma robusta)
+    try:
+        question_type = QuestionType(question_in.question_type)
+    except ValueError:
         logger.warning(f"Invalid question type: {question_in.question_type}")
         raise HTTPException(status_code=400, detail="Invalid question type")
     repo = QuestionRepository(db)

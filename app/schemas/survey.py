@@ -12,9 +12,12 @@ class SurveyBase(BaseModel):
 class SurveyCreate(SurveyBase):
     pass
 
+from app.schemas.question import QuestionRead
+
 class SurveyRead(SurveyBase):
     id: int
     created_at: datetime
+    questions: List[QuestionRead] = []
     model_config = {
         "from_attributes": True
     }
