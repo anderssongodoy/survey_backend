@@ -1,14 +1,8 @@
 """
 Esquemas de Pydantic para Question.
 """
-from typing import List, Optional
+from app.schemas.enums import QuestionType
 from pydantic import BaseModel
-from enum import Enum
-
-class QuestionType(str, Enum):
-    text = "text"
-    single_choice = "single_choice"
-    multiple_choice = "multiple_choice"
 
 class QuestionBase(BaseModel):
     text: str
