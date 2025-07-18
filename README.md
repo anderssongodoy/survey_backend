@@ -1,9 +1,9 @@
-
 # Survey API Backend
 
 API RESTful para crear y gestionar encuestas, preguntas y opciones de respuesta. Construida con FastAPI y PostgreSQL, lista para desarrollo profesional, testing y despliegue.
 
 ## Tabla de Contenidos
+
 - [Requisitos](#requisitos)
 - [Instalación y configuración](#instalación-y-configuración)
 - [Ejecución de la aplicación](#ejecución-de-la-aplicación)
@@ -13,11 +13,13 @@ API RESTful para crear y gestionar encuestas, preguntas y opciones de respuesta.
 - [Estructura del proyecto](#estructura-del-proyecto)
 
 ## Requisitos
+
 - Python 3.11+
 - PostgreSQL 13+
 - pip
 
 ## Instalación y configuración
+
 1. Clona el repositorio:
    ```bash
    git clone https://github.com/anderssongodoy/survey_backend.git
@@ -45,14 +47,19 @@ API RESTful para crear y gestionar encuestas, preguntas y opciones de respuesta.
    ```
 
 ## Ejecución de la aplicación
+
 Levanta el servidor de desarrollo con:
+
 ```bash
 uvicorn app.main:app --reload
 ```
+
 Las tablas se crean automáticamente al iniciar la app.
 
 ## Pruebas
+
 Ejecuta todos los tests unitarios con:
+
 ```bash
 pytest app/tests
 ```
@@ -60,8 +67,10 @@ pytest app/tests
 ## Uso con Postman
 
 ### 1. Crear una encuesta
+
 **POST** `http://localhost:8000/surveys/`
 Body (JSON):
+
 ```json
 {
   "title": "Encuesta de satisfacción",
@@ -70,8 +79,10 @@ Body (JSON):
 ```
 
 ### 2. Agregar una pregunta a una encuesta
+
 **POST** `http://localhost:8000/surveys/{survey_id}/questions/`
 Body (JSON):
+
 ```json
 {
   "text": "¿Cómo calificarías el servicio?",
@@ -80,8 +91,10 @@ Body (JSON):
 ```
 
 ### 3. Agregar una opción a una pregunta
+
 **POST** `http://localhost:8000/questions/{question_id}/options/`
 Body (JSON):
+
 ```json
 {
   "text": "Muy satisfecho"
@@ -90,14 +103,75 @@ Body (JSON):
 
 Las respuestas de error son claras si envías datos inválidos o IDs inexistentes.
 
+### 4. Listar todas las encuestas
+
+**GET** `http://localhost:8000/surveys`
+Respuesta:
+
+```json
+[
+  {
+    "id": 1,
+    "title": "Encuesta de satisfacción",
+    "description": "Por favor califica nuestro servicio",
+    "created_at": "2025-07-18T12:00:00",
+    "questions": []
+  }
+]
+```
+
+### 5. Obtener detalles de una encuesta (con preguntas y opciones)
+
+**GET** `http://localhost:8000/surveys/{survey_id}`
+Respuesta:
+
+```json
+{
+  "id": 1,
+  "title": "Encuesta de satisfacción",
+  "description": "Por favor califica nuestro servicio",
+  "created_at": "2025-07-18T12:00:00",
+  "questions": [
+    {
+      "id": 1,
+      "text": "¿Cómo calificarías el servicio?",
+      "question_type": "single_choice",
+      "options": [
+        { "id": 1, "text": "Muy satisfecho" }
+      ]
+    }
+  ]
+}
+```
+
+### 6. Obtener detalles de una pregunta (con opciones)
+
+**GET** `http://localhost:8000/questions/{question_id}`
+Respuesta:
+
+```json
+{
+  "id": 1,
+  "text": "¿Cómo calificarías el servicio?",
+  "question_type": "single_choice",
+  "options": [
+    { "id": 1, "text": "Muy satisfecho" }
+  ]
+}
+```
+
+
 ## Integración continua (CI)
+
 Cada push o pull request a `main` o `dev` ejecuta automáticamente un workflow de GitHub Actions que:
+
 - Levanta un contenedor de PostgreSQL para pruebas
 - Instala las dependencias del proyecto
 - Ejecuta todos los tests unitarios con pytest
 - Si algún test falla, el workflow marca el build como fallido
 
 ## Estructura del proyecto
+
 ```
 app/
   api/           # Routers de FastAPI
@@ -121,6 +195,7 @@ app/
 Esta arquitectura sigue principios de Clean Architecture y SOLID, ampliamente recomendados en la industria para proyectos de cualquier tamaño. Permite que el equipo evolucione el sistema rápidamente, minimizando deuda técnica y facilitando la colaboración.
 
 ## Notas
+
 - Los nombres de variables, clases y archivos están en inglés para mantener el estándar internacional.
 - Los comentarios y la documentación están en español para facilitar la comprensión.
 
@@ -136,6 +211,3 @@ app/
   api/            # Routers (endpoints)
   tests/          # Pruebas unitarias
 ```
-
-## Licencia
-MIT
