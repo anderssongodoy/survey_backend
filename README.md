@@ -43,7 +43,13 @@ API RESTful para crear y gestionar encuestas, preguntas y opciones de respuesta.
 5. Asegúrate de tener PostgreSQL corriendo y la base de datos `survey_db` creada:
    ```sql
    -- En psql
-   CREATE DATABASE survey_db;
+   CREATE DATABASE survey_db
+       WITH
+       OWNER = postgres
+       ENCODING = 'UTF8'
+       LC_COLLATE = 'C'
+       LC_CTYPE = 'C'
+       TEMPLATE = template0;
    ```
 
 ## Ejecución de la aplicación
@@ -159,7 +165,6 @@ Respuesta:
   ]
 }
 ```
-
 
 ## Integración continua (CI)
 
